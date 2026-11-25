@@ -19,7 +19,19 @@
 
 
 
-## 3. Booking API (`/booking`)
+## 3. GET Booking API (`/booking`)
+
+| ID                | Title / Description                     | Type     | Method & Endpoint   | Payload / Input Data                                  | Expected Status | Expected Response Body                                                                                           |
+|:------------------|:----------------------------------------|:---------|:--------------------|:------------------------------------------------------|:----------------|:-----------------------------------------------------------------------------------------------------------------|
+| `TC_BOOK_GET_001` | Get all booking IDs                     | Positive | `GET /booking`      |                                                       | `200 OK`        | JSON array containing booking IDs                                                                                |
+| `TC_BOOK_GET_002` | Get booking by ID                       | Positive | `GET /booking/{id}` | Url Parameter: booking ID                             | `200 OK`        | JSON object containing (`firstname`, `lastname`, `totalprice`, `depositpaid`, `bookingdates`, `additionalneeds`) |
+| `TC_BOOK_GET_003` | Get booking by non existing ID          | Negative | `GET /booking/{id}` | Url Parameter: non existing booking ID (e.g. 9999999) | `404 NOT FOUND` | Plain text message (Not Found)                                                                                   |
+| `TC_BOOK_GET_004` | Get booking with a specific firstname   | Positive | `GET /booking`      | Url Parameter: /booking?firstname=Sally               | `200 OK`        | JSON array containing booking IDs matching to firstname Sally                                                                                     |
+| `TC_BOOK_GET_005` | Get booking with non existing firstname | Negative | `GET /booking`      | Url Parameter: /booking?firstname=InvalidFirstName    | `200 OK`        | JSON array: []                                                                                                    |
+
+
+
+## 4. Booking API (`/booking`)
 
 | ID | Title / Description | Type | Method & Endpoint | Payload / Input Data | Expected Status | Expected Response Body |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -29,7 +41,8 @@
 | `TC_BOOK_004` | Create booking with invalid date format | Negative | `POST /booking` | JSON with invalid format in `bookingdates.checkin` (e.g., `"2026-13-45"`) | `400 Bad Request` | System rejects invalid date format. |
 
 
-## 4. Update Booking API (`/booking/{id}`)
+
+## 5. Update Booking API (`/booking/{id}`)
 
 | ID              | Title / Description                         | Type     | Method & Endpoint     | Payload / Input Data                                                                                                                                                                                            | Expected Status   | Expected Response Body                                       |
 |:----------------|:--------------------------------------------|:---------|:----------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------|:-------------------------------------------------------------|
@@ -40,5 +53,15 @@
 | `TC_UPDATE_005` | Partial update with invalid data type       | Negative | `PATCH /booking/{id}` | Partial JSON ({"totalprice": "invalid"}) and valid token                                                                                                                                                        | `400 Bad Request` | Plain text message (Bad Request)                             |
 | `TC_UPDATE_006` | Update booking with checkout date before checkin date   | Negative | `PUT /booking/{id}`   | Valid token and valid JSON with all required fields (`firstname`, `lastname`, `totalprice`, `depositpaid`, `bookingdates`, `additionalneeds`) but invalid dates (checkin: "2024-10-10", checkout: "2024-10-01") | `400 Bad Request` | Error response    |
 
+
+
+## 6. Delete Booking API (`/booking/{id}`)
+
+| ID              | Title / Description                    | Type     | Method & Endpoint      | Payload / Input Data               | Expected Status | Expected Response Body         |
+|:----------------|:---------------------------------------|:---------|:-----------------------|:-----------------------------------|:----------------|:-------------------------------|
+| `TC_DELETE_001` | Delete booking with valid auth token   | Positive | `DELETE /booking/{id}` | Valid token                        | `201 CREATED`   | Plain text message (Created)   |
+| `TC_DELETE_002` | Delete booking with invalid auth token | Negative | `DELETE /booking/{id}` | Invalid token                      | `403 Forbidden` | Plain text message (Forbidden) |
+| `TC_DELETE_003` | Delete booking without auth token      | Negative | `DELETE /booking/{id}` | No token                           | `403 Forbidden` | Plain text message (Forbidden) |
+| `TC_DELETE_004` | Verify booking is removed after deletion | Positive | `GET /booking/{id}`    | Url Parameter: deleted booking ID  | `404 NOT FOUND` | Plain text message (Not Found) |
 
 
